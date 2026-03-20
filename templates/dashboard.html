@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-speedometer2"></i> HR Dashboard</h4>
+
+<!-- Main Statistics -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-3">
+    <div class="card text-white bg-primary text-center p-3">
+      <div class="fs-2 fw-bold">{{ total }}</div>
+      <div>Active Employees</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-success text-center p-3">
+      <div class="fs-2 fw-bold">{{ done_tasks }}</div>
+      <div>Tasks Completed</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-warning text-center p-3">
+      <div class="fs-2 fw-bold">{{ pending_tasks }}</div>
+      <div>Tasks Pending</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-danger text-center p-3">
+      <div class="fs-2 fw-bold">{{ unread }}</div>
+      <div>Unread Notifications</div>
+    </div>
+  </div>
+</div>
+
+<!-- HR Dataset Statistics -->
+{% if hr_total > 0 %}
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <h5><i class="bi bi-database"></i> HR Dataset Overview</h5>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-info text-center p-3">
+      <div class="fs-2 fw-bold">{{ hr_total }}</div>
+      <div>Total HR Records</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-{{ 'danger' if hr_attrition > hr_total * 0.15 else 'success' }} text-center p-3">
+      <div class="fs-2 fw-bold">{{ "%.1f"|format((hr_attrition/hr_total*100) if hr_total > 0 else 0) }}%</div>
+      <div>Attrition Rate</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-secondary text-center p-3">
+      <div class="fs-2 fw-bold">{{ hr_departments|length }}</div>
+      <div>Departments</div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card text-white bg-dark text-center p-3">
+      <div class="fs-2 fw-bold">{{ "%.1f"|format(hr_avg_satisfaction or 0) }}/5</div>
+      <div>Avg Job Satisfaction</div>
+    </div>
+  </div>
+</div>
+
+<!-- Department Breakdown -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-pie-chart"></i> Department Distribution</h6>
+      </div>
+      <div class="card-body">
+        {% for dept, count in hr_departments %}
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span>{{ dept }}</span>
+          <span class="badge bg-primary">{{ count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-graph-up"></i> Quick Actions</h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="/hr_data" class="btn btn-outline-primary">
+            <i class="bi bi-table"></i> View Full HR Dataset
+          </a>
+          <a href="/import_hr_data" class="btn btn-outline-secondary">
+            <i class="bi bi-upload"></i> Re-import HR Data
+          </a>
+          <a href="/kpi" class="btn btn-outline-success">
+            <i class="bi bi-graph-up-arrow"></i> View KPI Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="alert alert-info">
+      <h5><i class="bi bi-info-circle"></i> HR Dataset Not Available</h5>
+      <p class="mb-2">No HR dataset has been imported yet. Click the button below to import the HR_Dataset.csv file.</p>
+      <a href="/import_hr_data" class="btn btn-primary">
+        <i class="bi bi-upload"></i> Import HR Dataset
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-people"></i> Active Employees</span>
+    <div>
+      <a href="/new_employee" class="btn btn-sm btn-primary"><i class="bi bi-person-plus"></i> Add Employee</a>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>#</th><th>Name</th><th>Department</th><th>Position</th><th>Start Date</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td>{{ e[0] }}</td>
+          <td>{{ e[1] }}</td>
+          <td>{{ e[2] }}</td>
+          <td>{{ e[3] }}</td>
+          <td>{{ e[4] or '—' }}</td>
+          <td>
+            <a href="/checklist/{{ e[0] }}" class="btn btn-sm btn-outline-secondary">Checklist</a>
+            <a href="/policy/{{ e[0] }}" class="btn btn-sm btn-outline-info">Policy</a>
+            <a href="/training/{{ e[0] }}" class="btn btn-sm btn-outline-success">Training</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-3">No employees yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
