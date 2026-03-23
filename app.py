@@ -427,26 +427,20 @@ def hr_data():
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
+def startup():
     init_db()
-    conn = sqlite3.connect(DB)
-    
-    # Get admin credentials from environment
+    conn = get_db()
     admin_user = os.getenv('ADMIN_USERNAME', 'admin')
     admin_pass = os.getenv('ADMIN_PASSWORD', 'admin123')
-    
-    conn.execute("INSERT OR IGNORE INTO users(id,username,password,role) VALUES(1,?,?,?)", 
+    conn.execute("INSERT OR IGNORE INTO users(id,username,password,role) VALUES(1,?,?,?)",
                  (admin_user, admin_pass, 'admin'))
     conn.commit()
     conn.close()
-    
-    # Import HR data on startup if not exists
-    print("Checking HR dataset...")
-    result = import_hr_data()
-    print(result)
-    
-    # Get port from environment
+    import_hr_data()
+
+startup()
+
+if __name__ == "__main__":
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('DEBUG', 'False').lower() == 'true'
-    
     app.run(host='0.0.0.0', port=port, debug=debug)
