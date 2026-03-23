@@ -360,7 +360,9 @@ def hr_data():
     conn = get_db()
     # Get pagination parameters
     page = request.args.get('page', 1, type=int)
-    per_page = 50
+    per_page = request.args.get('per_page', 50, type=int)
+    if per_page == 0:  # 0 means show all
+        per_page = 99999
     offset = (page - 1) * per_page
     
     # Get filtered data

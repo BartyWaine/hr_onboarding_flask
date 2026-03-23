@@ -112,6 +112,15 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2">
+                                        <label class="form-label">Rows per page</label>
+                                        <select name="per_page" class="form-select">
+                                            <option value="50" {{ 'selected' if request.args.get('per_page','50')=='50' }}>50</option>
+                                            <option value="100" {{ 'selected' if request.args.get('per_page')=='100' }}>100</option>
+                                            <option value="500" {{ 'selected' if request.args.get('per_page')=='500' }}>500</option>
+                                            <option value="0" {{ 'selected' if request.args.get('per_page')=='0' }}>All</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary">Filter</button>
                                         <a href="/hr_data" class="btn btn-outline-secondary">Clear</a>
                                     </div>
