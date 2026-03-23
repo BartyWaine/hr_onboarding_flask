@@ -430,15 +430,21 @@ def hr_data():
 # ─────────────────────────────────────────────────────────────────────────────
 
 def startup():
-    init_db()
-    conn = get_db()
-    admin_user = os.getenv('ADMIN_USERNAME', 'admin')
-    admin_pass = os.getenv('ADMIN_PASSWORD', 'admin123')
-    conn.execute("INSERT OR IGNORE INTO users(id,username,password,role) VALUES(1,?,?,?)",
-                 (admin_user, admin_pass, 'admin'))
-    conn.commit()
-    conn.close()
-    import_hr_data()
+    try:
+        init_db()
+        conn = get_db()
+        admin_user = os.getenv('ADMIN_USERNAME', 'admin')
+        admin_pass = os.getenv('ADMIN_PASSWORD', 'admin123')
+        conn.execute("INSERT OR IGNORE INTO users(id,username,password,role) VALUES(1,?,?,?)",
+                     (admin_user, admin_pass, 'admin'))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Startup DB error: {e}")
+    try:
+        import_hr_data()
+    except Exception as e:
+        print(f"Startup CSV error: {e}")
 
 startup()
 
